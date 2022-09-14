@@ -36,4 +36,4 @@ const getPopulatedPokemonsDb = async (req, res) => {
 
 
 
-    export {populatePokemonsDb,getPopulatedPokemonsDb};
+export {populatePokemonsDb,getPopulatedPokemonsDb};
