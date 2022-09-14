@@ -36,7 +36,7 @@ const signup = async (req, res) => {
   }
   try {
     await db.collection("users").insertOne(newUser);
-    res.sendStatus(201);
+    res.sendStatus(StatusCodes.CREATED);
   } catch (error) {
     console.log(error.message);
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
