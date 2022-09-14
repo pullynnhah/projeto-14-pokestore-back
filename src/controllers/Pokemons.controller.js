@@ -10,9 +10,7 @@ const getPokemons = async (req, res) => {
         if(filter.type === undefined){
             pokemons = await db.collection('Pokemons').find().toArray();
         } else{
-            pokemons = await db.collection('Pokemons').find({type1:filter.type}).toArray();
-            aux = await db.collection('Pokemons').find({type2:filter.type}).toArray();
-            pokemons = pokemons.concat(aux);
+            pokemons = await db.collection('Pokemons').find({$or:[{type1:filter.type},{type2:filter.type}]}).toArray();
         }
         res.send(pokemons).status(StatusCodes.ACCEPTED);
     } catch (error) {
