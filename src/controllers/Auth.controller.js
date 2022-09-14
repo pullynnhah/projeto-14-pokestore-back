@@ -2,7 +2,6 @@ import db from "../database/Mongo.js";
 import joi from "joi";
 import {stripHtml} from "string-strip-html";
 import bcrypt from "bcrypt";
-
 import {StatusCodes} from "http-status-codes";
 
 const newUserSchema = joi.object({
