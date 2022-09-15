@@ -1,5 +1,5 @@
 import db from "../database/Mongo.js";
-import {StatusCodes} from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 
 import dotenv from "dotenv";
 
