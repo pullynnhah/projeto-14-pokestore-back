@@ -2,12 +2,11 @@ import db from "../database/Mongo.js";
 import { StatusCodes } from "http-status-codes";
 
 const getPokemons = async (req, res) => {
-    const filter = req.body;
+    const filter = req.headers;
     console.log(filter)
     try {
         let pokemons;
-        let aux;
-        if(filter.type === undefined){
+        if(filter.type === undefined || filter.type === 'all'){
             pokemons = await db.collection('Pokemons').find().toArray();
         } else{
             pokemons = await db.collection('Pokemons').find({$or:[{type1:filter.type},{type2:filter.type}]}).toArray();
