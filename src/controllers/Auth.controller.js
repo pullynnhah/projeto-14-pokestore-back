@@ -99,6 +99,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   let section;
   const userId = req.headers.user;
+
   try {
     section = await db.collection("sections").findOne({ userId: ObjectId(userId) });
   } catch (error) {
@@ -109,7 +110,7 @@ const logout = async (req, res) => {
     return res.sendStatus(StatusCodes.NOT_FOUND);
   }
   try {
-    await db.collection("sections").deleteOne({ userId: `ObjectId(${userId})` });
+    await db.collection("sections").deleteOne({ userId: ObjectId(userId) });
     res.sendStatus(StatusCodes.OK);
   } catch (error) {
     console.log(error);
