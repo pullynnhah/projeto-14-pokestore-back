@@ -7,8 +7,9 @@ const router = express.Router();
 
 router.use(UserMiddleware);
 router.post("/cart", cartController.postProduct);
-router.get("/cart", cartController.getProduct);
+router.get("/cart", cartController.getProducts);
+
 router.post("/cart/:id", cartController.removeProduct);
-router.post("/cart/checkout", cartController.checkoutProducts);
+router.post("/checkout", cartController.checkoutProducts);
 
 export default router;

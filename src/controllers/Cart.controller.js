@@ -27,29 +27,53 @@ const postProduct = async (req, res) => {
   };
 
   try {
-    await db.collection("Carts").insertOne(data);
-    return res.sendStatus(StatusCodes.CREATED);
+    const {insertedId} = await db.collection("Carts").insertOne(data);
+    return res.status(StatusCodes.CREATED).send({
+      cartId: ObjectId(insertedId),
+    });
   } catch (error) {
     console.log(error.message);
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
 
-const getProduct = async (req, res) => {
-  const {cartid: cartId} = req.headers;
+const getProducts = async (req, res) => {
+  const {userid: userId} = req.headers;
+
+  const userFilter = {userId: ObjectId(userId)};
+  const {mode} = req.query;
+
+  let filter = userFilter;
+  if (mode === "cart") {
+    filter = {$and: [userFilter, {isActive: true}]};
+  } else if (mode === "history") {
+    filter = {$and: [userFilter, {isSold: true}]};
+  }
 
   try {
-    const cart = await db.collection("Carts").findOne({cartId: ObjectId(cartId)});
-    const pokemon = await db.collection("Pokemons").findOne({pokemonId: ObjectId(cart.pokemonId)});
-    res
-      .status(StatusCodes.OK)
-      .send({
-        cartId: ObjectId(cart._id),
-        quantity: cart.quantity,
-        name: pokemon.name,
-        type: pokemon.type1,
-        price: pokemon.price,
-      });
+    const carts = await db.collection("Carts").find(filter).toArray();
+
+    const data = await Promise.all(
+      carts.map(async cart => {
+        const pokemon = await db.collection("Pokemons").findOne({_id: ObjectId(cart.pokemonId)});
+        if (pokemon === null) {
+          console.log(cart.pokemonId);
+          return null;
+        }
+
+        return {
+          cartId: ObjectId(cart._id),
+          quantity: cart.quantity,
+          image: pokemon.image,
+          isLegendary: pokemon.isLegendary,
+          name: pokemon.name,
+          type: pokemon.type1,
+          price: pokemon.price,
+        };
+      })
+    );
+
+    res.status(StatusCodes.OK).send(data.filter(item => item !== null));
   } catch (error) {
     console.log(error.message);
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -57,12 +81,12 @@ const getProduct = async (req, res) => {
 };
 
 const removeProduct = async (req, res) => {
-  const {cartid: cartId} = req.headers;
+  const {id: cartId} = req.params;
   try {
     await db
       .collection("Carts")
       .updateOne(
-        {$and: [{cartId: ObjectId(cartId)}, {isActive: true}, {isSold: false}]},
+        {$and: [{_id: ObjectId(cartId)}, {isActive: true}, {isSold: false}]},
         {$set: {isActive: false}}
       );
     res.sendStatus(StatusCodes.OK);
@@ -75,7 +99,7 @@ const removeProduct = async (req, res) => {
 const checkoutProducts = async (req, res) => {
   const {userid: userId} = req.headers;
   moment().locale("en");
-
+  console.log(moment().format("L"));
   try {
     const {insertedId} = db.collection("Orders").insertOne({
       purchaseDate: moment().format("L"),
@@ -84,15 +108,16 @@ const checkoutProducts = async (req, res) => {
 
     await db
       .collection("Carts")
-      .updateOne(
+      .updateMany(
         {$and: [{userId: ObjectId(userId)}, {isActive: true}, {isSold: false}]},
         {$set: {isActive: false, isSold: true, orderId: ObjectId(insertedId)}}
       );
     res.sendStatus(StatusCodes.OK);
   } catch (error) {
     console.log(error.message);
+    res.sendStatus(StatusCodes.OK);
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
 
-export {postProduct, getProduct, removeProduct, checkoutProducts};
+export {postProduct, getProducts, removeProduct, checkoutProducts};
