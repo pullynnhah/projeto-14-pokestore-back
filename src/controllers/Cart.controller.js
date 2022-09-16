@@ -38,8 +38,8 @@ const postProduct = async (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-  const {userid: userId} = req.headers;
-  console.log(userId)
+  const {user: userId} = req.headers;
+
   const userFilter = {userId: ObjectId(userId)};
   const {mode} = req.query;
   console.log(userFilter)
@@ -58,11 +58,9 @@ const getProducts = async (req, res) => {
       carts.map(async cart => {
         const pokemon = await db.collection("Pokemons").findOne({_id: ObjectId(cart.pokemonId)});
         if (pokemon === null) {
-          console.log(cart.pokemonId);
           return null;
         }
-
-        return {
+        const data = {
           cartId: ObjectId(cart._id),
           quantity: cart.quantity,
           image: pokemon.image,
@@ -71,6 +69,12 @@ const getProducts = async (req, res) => {
           type: pokemon.type1,
           price: pokemon.price,
         };
+        if (mode === "history") {
+          const order = await db.collection("Orders").findOne({_id: ObjectId(cart.orderId)});
+          data.purchaseDate = order.purchaseDate;
+          data.deliveryDate = order.deliveryDate;
+        }
+        return data;
       })
     );
 
