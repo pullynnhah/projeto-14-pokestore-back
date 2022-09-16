@@ -39,9 +39,10 @@ const postProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   const {userid: userId} = req.headers;
-
+  console.log(userId)
   const userFilter = {userId: ObjectId(userId)};
   const {mode} = req.query;
+  console.log(userFilter)
 
   let filter = userFilter;
   if (mode === "cart") {

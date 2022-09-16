@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 
 const getHistory = async (req,res) =>{
     const {userid} = req.headers;
-    console.log(userid);
     try {
         let historyCartUser = await db.collection('Carts').find({userId:Number(userid)}).toArray();
         historyCartUser = historyCartUser.filter(history=>history.purchaseDate!==null);
