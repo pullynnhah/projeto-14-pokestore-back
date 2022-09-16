@@ -22,7 +22,7 @@ const getPokemons = async (req, res) => {
         }
         res.send(pokemons).status(StatusCodes.ACCEPTED);
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message,"lala")
         res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
