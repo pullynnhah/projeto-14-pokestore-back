@@ -38,7 +38,7 @@ const postProduct = async (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-  const {userid: userId} = req.headers;
+  const {user: userId} = req.headers;
 
   const userFilter = {userId: ObjectId(userId)};
   const {mode} = req.query;
