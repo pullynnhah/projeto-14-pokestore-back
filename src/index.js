@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 import express from "express";
 import authRouter from "./routers/Auth.routes.js";
 import adminRouter from "./routers/Admin.routes.js";
-import pokemonsRouter from "./routers/Pokemons.routes.js"
+import pokemonsRouter from "./routers/Pokemons.routes.js";
 import pokemonRouter from "./routers/Pokemon.routes.js";
-import purchaseHistory from "./routers/PurchaseHistory.routes.js"
+import purchaseHistory from "./routers/PurchaseHistory.routes.js";
+import cartRouter from "./routers/Cart.routes.js";
 import userRouter from "./routers/User.routes.js";
 
 dotenv.config();
@@ -18,7 +19,8 @@ app.use(authRouter);
 app.use(adminRouter);
 app.use(pokemonsRouter);
 app.use(pokemonRouter);
-app.use(purchaseHistory)
+app.use(purchaseHistory);
+app.use(cartRouter);
 app.use(userRouter);
 
 
