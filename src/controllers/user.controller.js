@@ -1,25 +1,26 @@
 import db from "../database/Mongo.js";
 import joi from "joi";
 import { stripHtml } from "string-strip-html";
-import bcrypt from "bcrypt";
 import { StatusCodes } from "http-status-codes";
 import { ObjectId } from "mongodb";
-import { v4 as uuidv4 } from "uuid";
 
 
 const userContent = async (req, res) => {
     let section;
     const userId = req.headers.user;
 
-    return res.sendStatus(200)
-  
     try {
-      section = await db.collection("sections").findOne({ userId: ObjectId(userId) });
+        const userData = await db.collection("users").findOne({ _id: ObjectId(userId) });
+        delete userData.password;
+        res.status(StatusCodes.OK).send(userData)
     } catch (error) {
-      console.log(error);
-      return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        console.log(error);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
-  
-  };
-  
-  export { userContent }
+
+
+
+
+};
+
+export { userContent }
