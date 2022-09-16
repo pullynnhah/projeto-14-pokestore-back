@@ -35,7 +35,26 @@ const postProduct = async (req, res) => {
   }
 };
 
-const getProduct = async (req, res) => {};
+const getProduct = async (req, res) => {
+  const {cartid: cartId} = req.headers;
+
+  try {
+    const cart = await db.collection("Carts").findOne({cartId: ObjectId(cartId)});
+    const pokemon = await db.collection("Pokemons").findOne({pokemonId: ObjectId(cart.pokemonId)});
+    res
+      .status(StatusCodes.OK)
+      .send({
+        cartId: ObjectId(cart._id),
+        quantity: cart.quantity,
+        name: pokemon.name,
+        type: pokemon.type1,
+        price: pokemon.price,
+      });
+  } catch (error) {
+    console.log(error.message);
+    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+};
 
 const removeProduct = async (req, res) => {
   const {cartid: cartId} = req.headers;
