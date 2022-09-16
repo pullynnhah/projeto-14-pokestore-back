@@ -9,5 +9,6 @@ router.use(UserMiddleware);
 router.post("/cart", cartController.postProduct);
 router.get("/cart", cartController.getProduct);
 router.post("/cart/:id", cartController.removeProduct);
-route.post("/cart/checkout", cartController.checkoutProduct);
+router.post("/cart/checkout", cartController.checkoutProducts);
+
 export default router;
