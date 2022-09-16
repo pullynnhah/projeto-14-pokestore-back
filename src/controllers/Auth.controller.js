@@ -78,11 +78,11 @@ const login = async (req, res) => {
   if (!authentication) {
     return res.status(StatusCodes.FORBIDDEN).send("Wrong email or password.");
   } else {
-    const token = uuidv4();
     const { _id, userPicture } = registeredUser;
+    const token = uuidv4();
     const userId = _id
     try {
-      const existentSection = await db.collection("sections").findOne({ userId: `ObjectId(${_id})` });
+      const existentSection = await db.collection("sections").findOne({ userId: ObjectId(_id) });
       if (existentSection !== null) {
         await db.collection("sections").updateOne({ userId: ObjectId(_id) }, { $set: { token: token } });
       } else {
@@ -94,8 +94,29 @@ const login = async (req, res) => {
     }
     return res.status(StatusCodes.OK).send({ token, userId, userPicture });
   }
-} 
+};
+
+const logout = async (req, res) => {
+  let section;
+  const userId = req.headers.user;
+
+  try {
+    section = await db.collection("sections").findOne({ userId: ObjectId(userId) });
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+  if (section === null) {
+    return res.sendStatus(StatusCodes.NOT_FOUND);
+  }
+  try {
+    await db.collection("sections").deleteOne({ userId: ObjectId(userId) });
+    res.sendStatus(StatusCodes.OK);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+};
 
 
-
-export { signup, login };
+export { signup, login, logout };
