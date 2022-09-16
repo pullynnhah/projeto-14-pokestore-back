@@ -6,6 +6,7 @@ import adminRouter from "./routers/Admin.routes.js";
 import pokemonsRouter from "./routers/Pokemons.routes.js"
 import pokemonRouter from "./routers/Pokemon.routes.js";
 import purchaseHistory from "./routers/PurchaseHistory.routes.js"
+import userRouter from "./routers/User.routes.js";
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ app.use(adminRouter);
 app.use(pokemonsRouter);
 app.use(pokemonRouter);
 app.use(purchaseHistory)
+app.use(userRouter);
+
 
 const port = process.env.PORT;
 
