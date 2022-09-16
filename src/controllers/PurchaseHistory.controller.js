@@ -10,7 +10,7 @@ const getHistory = async (req,res) =>{
         res.send(historyCartUser).status(StatusCodes.ACCEPTED); 
     } catch (error) {
         console.log(error.message);
-        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR,"lala");
     }
 }
 
