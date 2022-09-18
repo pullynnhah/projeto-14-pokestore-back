@@ -52,12 +52,11 @@ const getProducts = async (req, res) => {
 
   try {
     const carts = await db.collection("Carts").find(filter).toArray();
-
     const data = await Promise.all(
       carts.map(async cart => {
         const pokemon = await db.collection("Pokemons").findOne({pokedexNumber: cart.pokedexNumber});
         if (pokemon === null) {
-          return "null";
+          return null;
         }
         const data = {
           cartId: ObjectId(cart._id),
@@ -70,6 +69,10 @@ const getProducts = async (req, res) => {
         };
         if (mode === "history") {
           const order = await db.collection("Orders").findOne({_id: ObjectId(cart.orderId)});
+          console.log(order);
+          if (order === null) {
+            return null;
+          }
           data.purchaseDate = order.purchaseDate;
           data.deliveryDate = order.deliveryDate;
         }
