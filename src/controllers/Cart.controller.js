@@ -9,7 +9,7 @@ const quantitySchema = joi.object({
 });
 
 const postProduct = async (req, res) => {
-  const {pokemonid: pokemonId, userid: userId} = req.headers;
+  const {pokedex: pokedexNumber, user: userId} = req.headers;
 
   const validation = quantitySchema.validate(req.body);
   if (validation.error) {
@@ -19,8 +19,8 @@ const postProduct = async (req, res) => {
 
   const data = {
     userId: ObjectId(userId),
-    pokemonId: ObjectId(pokemonId),
     quantity,
+    pokedexNumber: Number(pokedexNumber),
     isActive: true,
     isSold: false,
     orderId: null,
@@ -53,10 +53,9 @@ const getProducts = async (req, res) => {
 
   try {
     const carts = await db.collection("Carts").find(filter).toArray();
-
     const data = await Promise.all(
       carts.map(async cart => {
-        const pokemon = await db.collection("Pokemons").findOne({_id: ObjectId(cart.pokemonId)});
+        const pokemon = await db.collection("Pokemons").findOne({pokedexNumber: cart.pokedexNumber});
         if (pokemon === null) {
           return null;
         }
@@ -71,6 +70,10 @@ const getProducts = async (req, res) => {
         };
         if (mode === "history") {
           const order = await db.collection("Orders").findOne({_id: ObjectId(cart.orderId)});
+          console.log(order);
+          if (order === null) {
+            return null;
+          }
           data.purchaseDate = order.purchaseDate;
           data.deliveryDate = order.deliveryDate;
         }
@@ -102,9 +105,8 @@ const removeProduct = async (req, res) => {
 };
 
 const checkoutProducts = async (req, res) => {
-  const {userid: userId} = req.headers;
+  const {user: userId} = req.headers;
   moment().locale("en");
-  console.log(moment().format("L"));
   try {
     const {insertedId} = db.collection("Orders").insertOne({
       purchaseDate: moment().format("L"),

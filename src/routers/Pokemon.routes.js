@@ -4,7 +4,6 @@ import * as pokemonController from "../controllers/Pokemon.controller.js";
 
 const router = express.Router();
 
-// TODO: add auth middleware
 router.get("/pokemon/:pokedexNumber", pokemonController.getPokemon);
 
 export default router;
