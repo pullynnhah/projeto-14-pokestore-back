@@ -42,7 +42,6 @@ const getProducts = async (req, res) => {
 
   const userFilter = {userId: ObjectId(userId)};
   const {mode} = req.query;
-  console.log(userFilter)
 
   let filter = userFilter;
   if (mode === "cart") {
@@ -108,21 +107,19 @@ const checkoutProducts = async (req, res) => {
   const {user: userId} = req.headers;
   moment().locale("en");
   try {
-    const {insertedId} = db.collection("Orders").insertOne({
+    const order = await db.collection("Orders").insertOne({
       purchaseDate: moment().format("L"),
       deliveryDate: moment().add(7, "days").format("L"),
     });
-
     await db
       .collection("Carts")
       .updateMany(
         {$and: [{userId: ObjectId(userId)}, {isActive: true}, {isSold: false}]},
-        {$set: {isActive: false, isSold: true, orderId: ObjectId(insertedId)}}
+        {$set: {isActive: false, isSold: true, orderId: order.insertedId}}
       );
     res.sendStatus(StatusCodes.OK);
   } catch (error) {
     console.log(error.message);
-    res.sendStatus(StatusCodes.OK);
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
